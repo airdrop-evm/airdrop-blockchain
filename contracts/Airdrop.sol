@@ -22,7 +22,8 @@ contract Airdrop is Ownable {
     IERC20 public tokenAddress;
 
     // Variables
-    AirdropInfo[] public airdrops;
+    uint256 public airdropsLength;
+    mapping(uint256 => AirdropInfo) public airdrops;
 
     // Events
     event AirdropCreated(uint256 indexed airdropId, uint256 start, uint256 end, uint256 amount, uint256 amountPerUser, bool whitelist, bytes32 merkleRoot);
@@ -36,9 +37,9 @@ contract Airdrop is Ownable {
     }
 
     // Public functions
-    function airdropsLength() public view returns (uint256) {
-        return airdrops.length;
-    }
+    // function airdropsLength() public view returns (uint256) {
+    //     return airdrops.length;
+    // }
 
     function createAirdrop(uint256 _start, uint256 _end, uint256 _amount, uint256 _amountPerUser, bool _whitelist, bytes32 _merkleRoot) public onlyOwner {
         if(_end > 0)
@@ -48,18 +49,19 @@ contract Airdrop is Ownable {
 
         tokenAddress.transferFrom(msg.sender, address(this), _amount);
 
-        AirdropInfo storage airdrop = airdrops[airdrops.length];
+        AirdropInfo storage airdrop = airdrops[airdropsLength];
         airdrop.start = _start;
         airdrop.end = _end;
         airdrop.amount = _amount;
         airdrop.amountPerUser = _amountPerUser;
         airdrop.whitelist = _whitelist;
         airdrop.merkleRoot = _merkleRoot;
-        emit AirdropCreated(airdrops.length, _start, _end, _amount, _amountPerUser, _whitelist, _merkleRoot);
+        emit AirdropCreated(airdropsLength, _start, _end, _amount, _amountPerUser, _whitelist, _merkleRoot);
+        airdropsLength++;
     }
 
     function modifyAirdrop(uint256 airdropId, uint256 _start, uint256 _end, uint256 _amount, uint256 _amountPerUser, bool _whitelist, bytes32 _merkleRoot) public onlyOwner {
-        require(airdropId < airdrops.length, "Airdrop does not exist");
+        require(airdropId < airdropsLength, "Airdrop does not exist");
         if(_end > 0)
             require(_start < _end, "Start must be before end");
         require(_amount > 0, "Amount must be greater than 0");
@@ -83,7 +85,7 @@ contract Airdrop is Ownable {
     }
 
     function claim(uint256 airdropId, bytes32[] memory merkleProof) public {
-        require(airdropId < airdrops.length, "Airdrop does not exist");
+        require(airdropId < airdropsLength, "Airdrop does not exist");
         AirdropInfo storage airdrop = airdrops[airdropId];
         require(airdrop.start == 0 || block.timestamp >= airdrop.start, "Airdrop has not started");
         require(airdrop.end == 0 || block.timestamp <= airdrop.end, "Airdrop has ended");
