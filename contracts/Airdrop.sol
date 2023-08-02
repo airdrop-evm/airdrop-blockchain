@@ -46,6 +46,7 @@ contract Airdrop is Ownable {
             require(_start < _end, "Start must be before end");
         require(_amount > 0, "Amount must be greater than 0");
         require(_amountPerUser > 0, "Amount per user must be greater than 0");
+        require (_amountPerUser <= _amount, "Amount per user must be less than or equal to amount");
 
         tokenAddress.transferFrom(msg.sender, address(this), _amount);
 
@@ -87,12 +88,10 @@ contract Airdrop is Ownable {
     function claim(uint256 airdropId, bytes32[] memory merkleProof) public {
         require(airdropId < airdropsLength, "Airdrop does not exist");
         AirdropInfo storage airdrop = airdrops[airdropId];
-        require(airdrop.start == 0 || block.timestamp >= airdrop.start, "Airdrop has not started");
-        require(airdrop.end == 0 || block.timestamp <= airdrop.end, "Airdrop has ended");
-        require(airdrop.amount > 0, "Airdrop has no tokens");
-        require(airdrop.amountPerUser > 0, "Airdrop has no tokens per user");
+        require(airdrop.start == 0 || block.timestamp >= airdrop.start, "Airdrop not started yet");
+        require(airdrop.end == 0 || block.timestamp <= airdrop.end, "Airdrop ended");
         require(airdrop.claimed < airdrop.amount, "Airdrop has no tokens left");
-        require(!airdrop.claimedUsers[msg.sender], "User has already claimed");
+        require(!airdrop.claimedUsers[msg.sender], "User already claimed");
 
         if(airdrop.whitelist) {
             bytes32 node = keccak256(abi.encodePacked(msg.sender));

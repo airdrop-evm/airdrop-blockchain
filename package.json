@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
+    "coverage": "hardhat coverage",
     "test": "hardhat test"
   },
   "author": "",
@@ -14,6 +15,7 @@
     "hardhat": "^2.17.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.2"
+    "@openzeppelin/contracts": "^4.9.2",
+    "merkletreejs": "^0.3.10"
   }
 }
