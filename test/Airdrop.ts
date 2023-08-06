@@ -37,6 +37,9 @@ describe('Airdrop', () => {
         // Not started yet - id: 2
         await airdrop.createAirdrop(start + 10000, end + 10000, amount, amountPerUser, whitelisted, merkleRoot);
 
+        // End time equal 0
+        await airdrop.createAirdrop(start, 0, amount, amountPerUser, whitelisted, merkleRoot);
+
         return { airdrop, utilityToken, owner, user1, user2, tree };
     }
 
@@ -156,6 +159,16 @@ describe('Airdrop', () => {
             let proof = tree.getHexProof(leaf);
             const balanceBefore = await utilityToken.balanceOf(user1.getAddress());
             await airdrop.connect(user1).claim(1, proof);
+            const balanceAfter = await utilityToken.balanceOf(user1.getAddress());
+            expect(balanceAfter - balanceBefore).to.equal(ethers.parseEther('10'));
+        })
+
+        it('Claim airdrop with whitelist and end time equal 0', async () => {
+            const { user1, airdrop, tree, utilityToken } = await loadFixture(fixtureWithAirdrops);
+            const leaf = ethers.keccak256(await user1.getAddress());
+            let proof = tree.getHexProof(leaf);
+            const balanceBefore = await utilityToken.balanceOf(user1.getAddress());
+            await airdrop.connect(user1).claim(3, proof);
             const balanceAfter = await utilityToken.balanceOf(user1.getAddress());
             expect(balanceAfter - balanceBefore).to.equal(ethers.parseEther('10'));
         })

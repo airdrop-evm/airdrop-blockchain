@@ -88,7 +88,7 @@ contract Airdrop is Ownable {
     function claim(uint256 airdropId, bytes32[] memory merkleProof) public {
         require(airdropId < airdropsLength, "Airdrop does not exist");
         AirdropInfo storage airdrop = airdrops[airdropId];
-        require(airdrop.start == 0 || block.timestamp >= airdrop.start, "Airdrop not started yet");
+        require(block.timestamp >= airdrop.start, "Airdrop not started yet");
         require(airdrop.end == 0 || block.timestamp <= airdrop.end, "Airdrop ended");
         require(airdrop.claimed < airdrop.amount, "Airdrop has no tokens left");
         require(!airdrop.claimedUsers[msg.sender], "User already claimed");
