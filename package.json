@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
+    "gasreport": "REPORT_GAS=true npx hardhat test",
     "test": "hardhat test"
   },
   "author": "",
