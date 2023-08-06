@@ -7,7 +7,9 @@
     "compile": "hardhat compile",
     "coverage": "hardhat coverage",
     "gasreport": "REPORT_GAS=true npx hardhat test",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "deploy": "npx hardhat run --network deploy scripts/deploy.ts",
+    "deploy:hardhat": "npx hardhat run --network localhost scripts/deploy.ts"
   },
   "author": "",
   "license": "ISC",
