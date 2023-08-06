@@ -36,11 +36,6 @@ contract Airdrop is Ownable {
         tokenAddress = IERC20(_tokenAddress);
     }
 
-    // Public functions
-    // function airdropsLength() public view returns (uint256) {
-    //     return airdrops.length;
-    // }
-
     function createAirdrop(uint256 _start, uint256 _end, uint256 _amount, uint256 _amountPerUser, bool _whitelist, bytes32 _merkleRoot) public onlyOwner {
         if(_end > 0)
             require(_start < _end, "Start must be before end");
