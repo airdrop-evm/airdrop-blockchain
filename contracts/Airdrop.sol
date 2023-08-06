@@ -70,6 +70,8 @@ contract Airdrop is Ownable {
 
         AirdropInfo storage airdrop = airdrops[airdropId];
 
+        require(airdrop.claimed <= _amount, "New amount must be greater than or equal to claimed amount");
+
         if(airdrop.amount > _amount) {
             tokenAddress.transfer(msg.sender, airdrop.amount - _amount);
         } else if(airdrop.amount < _amount) {

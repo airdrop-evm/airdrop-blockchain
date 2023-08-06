@@ -107,7 +107,77 @@ describe('Airdrop', () => {
         })
     })
 
-    describe('Modify airdrop', () => { })
+    describe('Modify airdrop', () => {
+        it('Modify airdrop as not owner', async () => {
+            const { user1, airdrop } = await loadFixture(fixtureWithAirdrops);
+            await expect(airdrop.connect(user1).modifyAirdrop(0, 0, 0, 0, 0, false, ethers.ZeroHash)).to.be.revertedWith('Ownable: caller is not the owner');
+        })
+
+        it('Modify not existed airdrop', async () => {
+            const { owner, airdrop } = await loadFixture(fixtureWithAirdrops);
+            await expect(airdrop.connect(owner).modifyAirdrop(5, 0, 0, 0, 0, false, ethers.ZeroHash)).to.be.revertedWith('Airdrop does not exist');
+        });
+
+        it('Modify airdrop with invalid start time', async () => {
+            const { airdrop, utilityToken } = await loadFixture(fixtureWithAirdrops);
+            const amount = ethers.parseEther('1000');
+            await utilityToken.approve(airdrop.getAddress(), amount);
+            const start = Math.floor(new Date().getTime() / 1000);
+            const end = start - 60;
+            const amountPerUser = ethers.parseEther('10');
+            const whitelisted = false;
+            const merkleRoot = ethers.ZeroHash;
+            await expect(airdrop.modifyAirdrop(0, start, end, amount, amountPerUser, whitelisted, merkleRoot)).to.be.revertedWith('Start must be before end');
+        })
+
+        it('Modify airdrop with invalid amount', async () => {
+            const { airdrop, utilityToken } = await loadFixture(fixtureWithAirdrops);
+            const amount = ethers.parseEther('0');
+            await utilityToken.approve(airdrop.getAddress(), amount);
+            const start = Math.floor(new Date().getTime() / 1000);
+            const end = start + 60;
+            const amountPerUser = ethers.parseEther('0');
+            const whitelisted = false;
+            const merkleRoot = ethers.ZeroHash;
+            await expect(airdrop.modifyAirdrop(0, start, end, amount, amountPerUser, whitelisted, merkleRoot)).to.be.revertedWith('Amount must be greater than 0');
+        })
+
+        // it('Modify airdrop with invalid amount per user', async () => {
+        //     const { airdrop, utilityToken } = await loadFixture(fixtureWithAirdrops);
+        //     const amount = ethers.parseEther('1000');
+        //     await utilityToken.approve(airdrop.getAddress(), amount);
+        //     const start = Math.floor(new Date().getTime() / 1000);
+        //     const end = start + 60;
+        //     const amountPerUser = ethers.parseEther('1001');
+        //     const whitelisted = false;
+        //     const merkleRoot = ethers.ZeroHash;
+        //     await expect(airdrop.modifyAirdrop(0, start, end, amount, amountPerUser, whitelisted, merkleRoot)).to.be.revertedWith('Amount per user must be less than or equal to amount');
+        // })
+
+        it('Modify airdrop with amount geather than left tokens', async () => {
+            const { airdrop, utilityToken } = await loadFixture(fixtureWithAirdrops);
+            const amount = ethers.parseEther('1000');
+            await utilityToken.approve(airdrop.getAddress(), amount);
+            const start = Math.floor(new Date().getTime() / 1000);
+            const end = start + 60;
+            const amountPerUser = ethers.parseEther('1000');
+            const whitelisted = false;
+            const merkleRoot = ethers.ZeroHash;
+            await airdrop.modifyAirdrop(0, start, end, amount, amountPerUser, whitelisted, merkleRoot);
+        })
+
+        it('Modify airdrop with amount less than left tokens', async () => {
+            const { airdrop, utilityToken } = await loadFixture(fixtureWithAirdrops);
+            const amount = ethers.parseEther('5');
+            await utilityToken.approve(airdrop.getAddress(), amount);
+            const start = Math.floor(new Date().getTime() / 1000);
+            const end = start + 60;
+            const amountPerUser = ethers.parseEther('5');
+            const whitelisted = false;
+            const merkleRoot = ethers.ZeroHash;
+            await airdrop.modifyAirdrop(0, start, end, amount, amountPerUser, whitelisted, merkleRoot);
+        })
+    })
 
     describe('Claim airdrop', () => {
         it('Claim airdrop', async () => {
