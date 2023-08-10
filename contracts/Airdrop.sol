@@ -28,6 +28,7 @@ contract Airdrop is Ownable {
     // Events
     event AirdropCreated(uint256 indexed airdropId, uint256 start, uint256 end, uint256 amount, uint256 amountPerUser, bool whitelist, bytes32 merkleRoot);
     event AirdropModified(uint256 indexed airdropId, uint256 start, uint256 end, uint256 amount, uint256 amountPerUser, bool whitelist, bytes32 merkleRoot);
+    event Claim(uint256 indexed airdropId, address indexed user, uint256 amount);
 
     // Errors
 
@@ -98,5 +99,6 @@ contract Airdrop is Ownable {
         airdrop.claimedUsers[msg.sender] = true;
         airdrop.claimed += airdrop.amountPerUser;
         tokenAddress.transfer(msg.sender, airdrop.amountPerUser);
+        emit Claim(airdropId, msg.sender, airdrop.amountPerUser);
     }
 }
