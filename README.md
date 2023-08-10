@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/airdrop-evm/airdrop-blockchain/branch/main/graph/badge.svg?token=X7D6QORWGX)](https://codecov.io/gh/airdrop-evm/airdrop-blockchain)
+
 # Airdrop Smart Contract
 
 This is a Solidity smart contract that facilitates the distribution of tokens through airdrop campaigns. The contract allows the owner to create and manage airdrop campaigns, set specific conditions, and enables users to claim their allocated tokens based on a whitelist or merkle proof.
